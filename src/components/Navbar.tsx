@@ -24,16 +24,17 @@ export const Navbar: React.FC<NavbarProps> = ({ cartItemCount }) => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      navigate('/');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
+  const handleNavigate = (path: string) => {
+    setMobileMenuOpen(false);
+    navigate(path);
   };
 
-  
+  const handleSignOut = async () => {
+    await signOut();
+    setMobileMenuOpen(false);
+    navigate('/');
+  };
+
   const displayName =
     userProfile?.displayName ||
     userProfile?.email ||
@@ -41,137 +42,150 @@ export const Navbar: React.FC<NavbarProps> = ({ cartItemCount }) => {
     '';
 
   return (
-    <nav className="bg-gaming-gray border-b border-gaming-gray-light sticky top-0 z-40 backdrop-blur-sm bg-gaming-gray/95">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-8">
+    <>
+      {/* ================= NAVBAR ================= */}
+      <nav className="bg-gaming-gray border-b border-gaming-gray-light sticky top-0 z-40 backdrop-blur-sm bg-gaming-gray/95">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            {/* LOGO */}
             <button
-              onClick={() => navigate('/')}
-              className="text-2xl font-bold text-gaming-green hover:text-gaming-cyan transition-colors"
+              onClick={() => handleNavigate('/')}
+              className="text-2xl font-bold text-gaming-green"
             >
               {t('siteName')}
             </button>
 
-            <div className="hidden md:flex items-center gap-6">
-              <button
-                onClick={() => navigate('/')}
-                className="text-gray-300 hover:text-gaming-green transition-colors"
-              >
-                {t('home')}
-              </button>
-              <button
-                onClick={() => navigate('/products')}
-                className="text-gray-300 hover:text-gaming-green transition-colors"
-              >
-                {t('products')}
-              </button>
-            </div>
-          </div>
+            {/* DESKTOP MENU */}
+            <div className="hidden md:flex items-center gap-4">
+              <button onClick={() => navigate('/')} className="nav-btn">{t('home')}</button>
+              <button onClick={() => navigate('/products')} className="nav-btn">{t('products')}</button>
 
-          <div className="hidden md:flex items-center gap-4">
-            {/* 🌍 Language */}
+              <button
+                onClick={() => setLanguage(language === 'fr' ? 'ar' : 'fr')}
+                className="nav-btn"
+              >
+                <Globe className="w-4 h-4" /> {language === 'fr' ? 'AR' : 'FR'}
+              </button>
+
+              {!isGuest && (
+                <>
+                  <button onClick={() => navigate('/orders')} className="nav-btn">
+                    <Package className="w-4 h-4" /> {t('myOrders')}
+                  </button>
+
+                  <button onClick={() => navigate('/cart')} className="relative nav-btn">
+                    <ShoppingCart className="w-4 h-4" />
+                    {cartItemCount > 0 && (
+                      <span className="badge">{cartItemCount}</span>
+                    )}
+                  </button>
+
+                  {isAdmin && (
+                    <button onClick={() => navigate('/admin')} className="nav-btn">
+                      <Shield className="w-4 h-4" /> Admin
+                    </button>
+                  )}
+
+                  {isSeller && (
+                    <button onClick={() => navigate('/seller')} className="nav-btn">
+                      <Store className="w-4 h-4" /> Seller
+                    </button>
+                  )}
+
+                  <button onClick={handleSignOut} className="nav-btn text-red-400">
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+
+              {isGuest && (
+                <button
+                  onClick={() => navigate('/login')}
+                  className="bg-gaming-green text-black px-4 py-2 rounded-lg font-semibold"
+                >
+                  {t('login')}
+                </button>
+              )}
+            </div>
+
+            {/* MOBILE BUTTON */}
             <button
-              onClick={() => setLanguage(language === 'fr' ? 'ar' : 'fr')}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-gaming-green hover:bg-gaming-dark transition-all"
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden text-gaming-green"
             >
-              <Globe className="w-5 h-5" />
-              <span>{language === 'fr' ? 'AR' : 'FR'}</span>
+              <Menu className="w-7 h-7" />
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* ================= MOBILE MENU ================= */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-[9999] bg-black/80 md:hidden">
+          <div className="absolute top-0 right-0 w-4/5 h-full bg-gaming-dark p-6 space-y-6">
+
+            {/* CLOSE */}
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-gaming-green"
+            >
+              <X className="w-7 h-7" />
             </button>
 
-            {!isGuest && userProfile && (
-              <>
-                {/* 👤 USER NAME / EMAIL / PHONE */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-gaming-dark rounded-lg">
-                  <User className="w-4 h-4 text-gaming-cyan" />
-                  <span className="text-sm text-gray-200 max-w-[140px] truncate">
-                    {displayName}
-                  </span>
-                </div>
+            <button onClick={() => handleNavigate('/')} className="mobile-link">
+              {t('home')}
+            </button>
 
-                {/* 💳 CREDITS */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-gaming-dark rounded-lg">
-                  <span className="text-gaming-cyan font-bold">
-                    {userProfile.credit}
-                  </span>
-                  <span className="text-gray-400 text-sm">
-                    {t('credits')}
-                  </span>
-                </div>
+            <button onClick={() => handleNavigate('/products')} className="mobile-link">
+              {t('products')}
+            </button>
+
+            {!isGuest && (
+              <>
+                <button onClick={() => handleNavigate('/orders')} className="mobile-link">
+                  {t('myOrders')}
+                </button>
+
+                <button onClick={() => handleNavigate('/cart')} className="mobile-link">
+                  {t('cart')}
+                </button>
 
                 {isAdmin && (
-                  <button
-                    onClick={() => navigate('/admin')}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-gaming-cyan hover:bg-gaming-dark transition-all"
-                  >
-                    <Shield className="w-5 h-5" />
-                    <span className="hidden lg:inline">
-                      {t('adminPanel')}
-                    </span>
+                  <button onClick={() => handleNavigate('/admin')} className="mobile-link">
+                    Admin
                   </button>
                 )}
 
                 {isSeller && (
-                  <button
-                    onClick={() => navigate('/seller')}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-gaming-cyan hover:bg-gaming-dark transition-all"
-                  >
-                    <Store className="w-5 h-5" />
-                    <span className="hidden lg:inline">
-                      {t('sellerPanel')}
-                    </span>
+                  <button onClick={() => handleNavigate('/seller')} className="mobile-link">
+                    Seller
                   </button>
                 )}
 
-                <button
-                  onClick={() => navigate('/orders')}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-gaming-green hover:bg-gaming-dark transition-all"
-                >
-                  <Package className="w-5 h-5" />
-                  <span className="hidden lg:inline">
-                    {t('myOrders')}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => navigate('/cart')}
-                  className="relative flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-gaming-green hover:bg-gaming-dark transition-all"
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  {cartItemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-gaming-green text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </button>
-
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-red-500 hover:bg-gaming-dark transition-all"
-                >
-                  <LogOut className="w-5 h-5" />
+                <button onClick={handleSignOut} className="mobile-link text-red-400">
+                  {t('logout')}
                 </button>
               </>
             )}
 
             {isGuest && (
               <button
-                onClick={() => navigate('/login')}
-                className="flex items-center gap-2 px-4 py-2 bg-gaming-green text-black rounded-lg hover:bg-gaming-green/90 transition-all font-semibold"
+                onClick={() => handleNavigate('/login')}
+                className="bg-gaming-green text-black py-3 rounded-lg font-bold"
               >
-                <User className="w-5 h-5" />
                 {t('login')}
               </button>
             )}
-          </div>
 
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-gray-300 hover:text-gaming-green"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+            <button
+              onClick={() => setLanguage(language === 'fr' ? 'ar' : 'fr')}
+              className="mobile-link"
+            >
+              🌍 {language === 'fr' ? 'العربية' : 'Français'}
+            </button>
+          </div>
         </div>
-      </div>
-    </nav>
+      )}
+    </>
   );
 };
