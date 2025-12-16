@@ -47,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartItemCount }) => {
       <nav className="bg-gaming-gray border-b border-gaming-gray-light sticky top-0 z-40 backdrop-blur-sm bg-gaming-gray/95">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
+
             {/* LOGO */}
             <button
               onClick={() => handleNavigate('/')}
@@ -57,8 +58,13 @@ export const Navbar: React.FC<NavbarProps> = ({ cartItemCount }) => {
 
             {/* DESKTOP MENU */}
             <div className="hidden md:flex items-center gap-4">
-              <button onClick={() => navigate('/')} className="nav-btn">{t('home')}</button>
-              <button onClick={() => navigate('/products')} className="nav-btn">{t('products')}</button>
+              <button onClick={() => navigate('/')} className="nav-btn">
+                {t('home')}
+              </button>
+
+              <button onClick={() => navigate('/products')} className="nav-btn">
+                {t('products')}
+              </button>
 
               <button
                 onClick={() => setLanguage(language === 'fr' ? 'ar' : 'fr')}
@@ -122,47 +128,69 @@ export const Navbar: React.FC<NavbarProps> = ({ cartItemCount }) => {
       {/* ================= MOBILE MENU ================= */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-[9999] bg-black/80 md:hidden">
-          <div className="absolute top-0 right-0 w-4/5 h-full bg-gaming-dark p-6 space-y-6">
+          <div className="absolute top-0 right-0 w-4/5 max-w-sm h-full bg-gaming-dark p-6 flex flex-col gap-6">
 
             {/* CLOSE */}
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="text-gaming-green"
+              className="self-end text-gaming-green"
             >
               <X className="w-7 h-7" />
             </button>
 
-            <button onClick={() => handleNavigate('/')} className="mobile-link">
+            {/* LINKS */}
+            <button
+              onClick={() => handleNavigate('/')}
+              className="w-full text-left text-lg text-gray-200 py-3 px-4 rounded-lg hover:bg-gaming-gray transition"
+            >
               {t('home')}
             </button>
 
-            <button onClick={() => handleNavigate('/products')} className="mobile-link">
+            <button
+              onClick={() => handleNavigate('/products')}
+              className="w-full text-left text-lg text-gray-200 py-3 px-4 rounded-lg hover:bg-gaming-gray transition"
+            >
               {t('products')}
             </button>
 
             {!isGuest && (
               <>
-                <button onClick={() => handleNavigate('/orders')} className="mobile-link">
+                <button
+                  onClick={() => handleNavigate('/orders')}
+                  className="w-full text-left text-lg text-gray-200 py-3 px-4 rounded-lg hover:bg-gaming-gray transition"
+                >
                   {t('myOrders')}
                 </button>
 
-                <button onClick={() => handleNavigate('/cart')} className="mobile-link">
+                <button
+                  onClick={() => handleNavigate('/cart')}
+                  className="w-full text-left text-lg text-gray-200 py-3 px-4 rounded-lg hover:bg-gaming-gray transition"
+                >
                   {t('cart')}
                 </button>
 
                 {isAdmin && (
-                  <button onClick={() => handleNavigate('/admin')} className="mobile-link">
+                  <button
+                    onClick={() => handleNavigate('/admin')}
+                    className="w-full text-left text-lg text-gray-200 py-3 px-4 rounded-lg hover:bg-gaming-gray transition"
+                  >
                     Admin
                   </button>
                 )}
 
                 {isSeller && (
-                  <button onClick={() => handleNavigate('/seller')} className="mobile-link">
+                  <button
+                    onClick={() => handleNavigate('/seller')}
+                    className="w-full text-left text-lg text-gray-200 py-3 px-4 rounded-lg hover:bg-gaming-gray transition"
+                  >
                     Seller
                   </button>
                 )}
 
-                <button onClick={handleSignOut} className="mobile-link text-red-400">
+                <button
+                  onClick={handleSignOut}
+                  className="w-full text-left text-lg text-red-400 py-3 px-4 rounded-lg hover:bg-gaming-gray transition"
+                >
                   {t('logout')}
                 </button>
               </>
@@ -171,15 +199,16 @@ export const Navbar: React.FC<NavbarProps> = ({ cartItemCount }) => {
             {isGuest && (
               <button
                 onClick={() => handleNavigate('/login')}
-                className="bg-gaming-green text-black py-3 rounded-lg font-bold"
+                className="bg-gaming-green text-black py-3 rounded-lg font-bold text-lg"
               >
                 {t('login')}
               </button>
             )}
 
+            {/* LANGUAGE */}
             <button
               onClick={() => setLanguage(language === 'fr' ? 'ar' : 'fr')}
-              className="mobile-link"
+              className="w-full text-left text-lg text-gray-200 py-3 px-4 rounded-lg hover:bg-gaming-gray transition"
             >
               🌍 {language === 'fr' ? 'العربية' : 'Français'}
             </button>
